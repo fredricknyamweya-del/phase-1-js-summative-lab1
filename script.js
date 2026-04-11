@@ -1,70 +1,83 @@
-const form = document.getElementById("searchForm");
-const input = document.getElementById("wordInput");
-const result = document.getElementById("result");
-const errorMessage = document.getElementById("errorMessage");
+// capturing the main elements from the page 
+const formEl = document.getElementById("searchForm"); 
+const inputEl = document.getElementById("searchInputBox"); 
+const errorEl = document.getElementById("errorBanner"); 
+const wordEl = document.getElementById("displayWord"); 
+const phoneticEl = document.getElementById("phoneticText"); 
+const audioEl = document.getElementById("pronunciationAudio"); 
+const defsList = document.getElementById("definitions"); 
+const synonymEl = document.getElementById("synonymOutput"); 
 
-form.addEventListener("submit", function (e) {
+// Form submit event listener to handle dictornary search action
+formEl.addEventListener("submit", (e) => {
   e.preventDefault();
+  const query = inputEl.value.trim();
 
-  const word = input.value.trim();
-
-  if (word === "") {
-    errorMessage.textContent = "Please enter a word.";
-    result.innerHTML = "";
+  // validaion to check for user input
+  if (!query) {
+    errorEl.textContent = "Field is Empty. Type a word to search.";
+    clearOutput();
     return;
   }
 
-  fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${word}`)
-    .then(res => {
+  // reseting state before fetching
+  errorEl.textContent = "";
+  clearOutput();
+
+  // fetching data from dictionary API
+  fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${query}`)
+    .then((res) => {
       if (!res.ok) {
-        throw new Error("Word not found");
+        throw new Error("Word not found.");
       }
       return res.json();
     })
-    .then(data => {
-      displayData(data[0]);
-      errorMessage.textContent = "";
+    .then((data) => {
+      // take the first result
+      renderWord(data[0]);
     })
-    .catch(err => {
-      errorMessage.textContent = err.message;
-      result.innerHTML = "";
+    .catch((err) => {
+      errorEl.textContent = err.message;
     });
 });
 
-function displayData(data) {
+// Page update with API data
+function renderWord(entry) {
+  wordEl.textContent = entry.word || "";
 
-  document.getElementById("word").textContent = data.word;
+  // phonetic text
+  const phoneticObj = entry.phonetics.find(p => p.text);
+  phoneticEl.textContent = phoneticObj ? phoneticObj.text : "No phonetic info";
 
-  const phonetic = data.phonetics.find(p => p.text);
-  document.getElementById("phonetic").textContent =
-    phonetic ? phonetic.text : "No pronunciation available";
-
-  const audio = document.getElementById("audio");
-  const audioData = data.phonetics.find(p => p.audio);
-
-  if (audioData) {
-    audio.src = audioData.audio;
-    audio.style.display = "block";
+  // pronounciation audio
+  const audioObj = entry.phonetics.find(p => p.audio);
+  if (audioObj && audioObj.audio) {
+    audioEl.src = audioObj.audio;
+    audioEl.style.display = "block";
   } else {
-    audio.style.display = "none";
+    audioEl.style.display = "none";
   }
 
-  const definitionsDiv = document.getElementById("definitions");
-  definitionsDiv.innerHTML = "";
-
-  data.meanings.forEach(meaning => {
-    meaning.definitions.forEach(def => {
-      const p = document.createElement("p");
-      p.textContent = `${meaning.partOfSpeech}: ${def.definition}`;
-      definitionsDiv.appendChild(p);
+  // definitions
+  defsList.innerHTML = "";
+  entry.meanings.forEach((meaning) => {
+    meaning.definitions.forEach((def) => {
+      const li = document.createElement("li");
+      li.textContent = `${meaning.partOfSpeech}: ${def.definition}`;
+      defsList.appendChild(li);
     });
   });
 
-  const synonyms = data.meanings[0].synonyms || [];
-  document.getElementById("synonyms").textContent =
-    synonyms.length > 0
-      ? "Synonyms: " + synonyms.join(", ")
-      : "No synonyms available";
+  // synonyms
+  const syns = entry.meanings[0]?.synonyms || [];
+  synonymEl.textContent = syns.length > 0 ? "Synonyms: " + syns.join(", ") : "No synonyms found";
+}
 
-  result.classList.add("highlight");
+// to reset page
+function clearOutput() {
+  wordEl.textContent = "";
+  phoneticEl.textContent = "";
+  defsList.innerHTML = "";
+  synonymEl.textContent = "";
+  audioEl.style.display = "none";
 }
