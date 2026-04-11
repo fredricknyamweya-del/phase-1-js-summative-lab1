@@ -2,36 +2,53 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Wordly Dictionary</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
 
-  <div class="container">
-    <h1>Wordly Dictionary</h1>
+  <div class="container py-5">
+
+    <div class="text-center mb-4">
+      <h1 class="fw-bold">Wordly Dictionary</h1>
+      <p class="text-muted">Search any word and get its meaning instantly</p>
+    </div>
 
     <!-- Search Form -->
-    <form id="searchForm">
+    <form id="searchForm" class="d-flex gap-2 mb-3">
       <input 
         type="text" 
         id="wordInput" 
-        placeholder="Enter a word..." 
+        class="form-control" 
+        placeholder="Enter a word..."
         aria-label="Search word"
       >
-      <button type="submit">Search</button>
+      <button class="btn btn-primary" type="submit">Search</button>
     </form>
 
-    <!-- Results -->
-    <div id="result">
+    <!-- Error -->
+    <p id="errorMessage" class="text-danger"></p>
+
+    <!-- Result Card -->
+    <div id="result" class="card shadow-sm p-4">
+
       <h2 id="word"></h2>
-      <p id="phonetic"></p>
-      <audio id="audio" controls></audio>
+      <p id="phonetic" class="text-muted"></p>
+
+      <audio id="audio" controls class="mb-3"></audio>
 
       <div id="definitions"></div>
-      <p id="synonyms"></p>
+
+      <p id="synonyms" class="mt-3 fw-semibold"></p>
+
     </div>
+
   </div>
 
   <script src="script.js"></script>
+
 </body>
 </html>
