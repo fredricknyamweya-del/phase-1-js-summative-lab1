@@ -8,7 +8,7 @@ const audioEl = document.getElementById("pronunciationAudio");
 const defsList = document.getElementById("definitions"); 
 const synonymEl = document.getElementById("synonymOutput"); 
 
-// Form submit event listener to handle dictornary search action
+// Form submit event listner to handle dictornary search action
 formEl.addEventListener("submit", (e) => {
   e.preventDefault();
   const query = inputEl.value.trim();
@@ -49,7 +49,7 @@ function renderWord(entry) {
   const phoneticObj = entry.phonetics.find(p => p.text);
   phoneticEl.textContent = phoneticObj ? phoneticObj.text : "No phonetic info";
 
-  // pronounciation audio
+  // pronounciation of audio's
   const audioObj = entry.phonetics.find(p => p.audio);
   if (audioObj && audioObj.audio) {
     audioEl.src = audioObj.audio;
@@ -73,7 +73,7 @@ function renderWord(entry) {
   synonymEl.textContent = syns.length > 0 ? "Synonyms: " + syns.join(", ") : "No synonyms found";
 }
 
-// to reset page
+//page resetting function to clear the search result and messages of error
 function clearOutput() {
   wordEl.textContent = "";
   phoneticEl.textContent = "";
